@@ -2,11 +2,12 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from google.api_core.exceptions import ResourceExhausted
 import chat_service
+from uuid import UUID
 
 router = APIRouter()
 
 class ChatRequest(BaseModel):
-    session_id: str
+    session_id: UUID
     message: str
 
 @router.post("/chat")

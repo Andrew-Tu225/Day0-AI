@@ -9,3 +9,5 @@ pydantic
 requests
 tenacity
 fastapi[standard]
+psycopg2-binary
+langchain-postgres
