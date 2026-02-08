@@ -86,3 +86,20 @@ def create_chat_session():
         conn.commit()
         
     return str(session_id)
+
+def get_chat_history(session_id: UUID):
+    """
+    Retrieves and formats chat history for a given session.
+    Returns a list of dicts: {'role': 'user'|'assistant', 'content': str}
+    """
+    history = get_session_history(session_id)
+    formatted_messages = []
+    
+    for msg in history.messages:
+        role = "user" if msg.type == "human" else "assistant"
+        formatted_messages.append({
+            "role": role,
+            "content": msg.content
+        })
+        
+    return formatted_messages
