@@ -11,3 +11,7 @@ tenacity
 fastapi[standard]
 psycopg2-binary
 langchain-postgres
+pytest
+pytest-asyncio
+pytest-mock
+httpx
