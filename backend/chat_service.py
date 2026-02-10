@@ -8,7 +8,8 @@ from google.api_core.exceptions import ResourceExhausted
 from langchain_postgres import PostgresChatMessageHistory
 from dotenv import load_dotenv
 from prompt import COACH_SYSTEM_PROMPT
-from uuid import UUID
+from uuid import UUID, uuid4
+from datetime import datetime, timezone
 import psycopg
 
 # Load env vars if not already loaded (safe to call multiple times)
@@ -72,3 +73,33 @@ def chat_with_coach(session_id: UUID, message: str) -> str:
         config={"configurable": {"session_id": session_id}}
     )
     return response.content
+
+def create_chat_session():
+    session_id = uuid4()
+    created_at = datetime.now(timezone.utc)
+    
+    with conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO chat_sessions (session_id, created_at) VALUES (%s, %s)",
+            (session_id, created_at)
+        )
+        conn.commit()
+        
+    return str(session_id)
+
+def get_chat_history(session_id: UUID):
+    """
+    Retrieves and formats chat history for a given session.
+    Returns a list of dicts: {'role': 'user'|'assistant', 'content': str}
+    """
+    history = get_session_history(session_id)
+    formatted_messages = []
+    
+    for msg in history.messages:
+        role = "user" if msg.type == "human" else "assistant"
+        formatted_messages.append({
+            "role": role,
+            "content": msg.content
+        })
+        
+    return formatted_messages

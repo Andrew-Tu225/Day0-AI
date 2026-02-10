@@ -24,3 +24,16 @@ async def chat(req: ChatRequest):
             return {"reply": "The Coach is a bit overwhelmed right now. Give me 30 seconds!"}
         
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/create-session")
+async def create_chat_session():
+    session_id = chat_service.create_chat_session()
+    return {"session_id": session_id}
+
+@router.get("/chat/{session_id}/history")
+async def get_chat_history(session_id: UUID):
+    try:
+        history = chat_service.get_chat_history(session_id)
+        return {"history": history}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
